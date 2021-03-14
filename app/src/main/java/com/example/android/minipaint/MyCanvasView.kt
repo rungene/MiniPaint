@@ -46,4 +46,15 @@ class MyCanvasView(context: Context):View(context) {
 
     }
 
+   /* Override onDraw() and draw the contents of the cached extraBitmap on the canvas associated
+    with the view. The drawBitmap() Canvas method comes in several versions. In this code, you
+    provide the bitmap, the x and y coordinates (in pixels) of the top left corner, and null for
+        the Paint, as you'll set that later*/
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawBitmap(extraBitmap, 0f, 0f, null)
+    }
+    //Note: The 2D coordinate system used for drawing on a Canvas is in pixels, and the origin (0,0)
+// is at the top left corner of the Canvas.
+
 }
