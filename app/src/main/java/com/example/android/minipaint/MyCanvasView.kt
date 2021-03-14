@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
 
 //define a constant for the stroke width.
@@ -58,6 +59,8 @@ class MyCanvasView(context: Context):View(context) {
     private var currentX = 0f
     private var currentY = 0f
 
+    private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
+
 
    /* This callback method is called by the Android system with the changed screen dimensions,
     that is, with a new width
@@ -105,9 +108,30 @@ class MyCanvasView(context: Context):View(context) {
         currentY = motionTouchEventY
     }
 
-    private fun touchMove() {}
 
-    private fun touchUp() {}
+    /*Calculate the traveled distance (dx, dy), create a curve between the two points and store it
+    in path, update the running currentX and currentY tally, and draw the path. Then call
+    invalidate() to force redrawing of the screen with the updated path.*/
+
+    private fun touchMove() {
+        val dx = Math.abs(motionTouchEventX - currentX)
+        val dy = Math.abs(motionTouchEventY - currentY)
+        if (dx >= touchTolerance || dy >= touchTolerance) {
+            // QuadTo() adds a quadratic bezier from the last point,
+            // approaching control point (x1,y1), and ending at (x2,y2).
+            path.quadTo(currentX, currentY, (motionTouchEventX + currentX) / 2, (motionTouchEventY + currentY) / 2)
+            currentX = motionTouchEventX
+            currentY = motionTouchEventY
+            // Draw the path in the extra bitmap to cache it.
+            extraCanvas.drawPath(path, paint)
+        }
+        invalidate()
+    }
+
+    private fun touchUp() {
+        // Reset the path so it doesn't get drawn again.
+        path.reset()
+    }
 
 
    /* override the onTouchEvent() method to cache the x and y coordinates of the passed in event.
