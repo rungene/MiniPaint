@@ -53,7 +53,10 @@ class MyCanvasView(context: Context):View(context) {
   private var motionTouchEventX = 0f
     private var motionTouchEventY = 0f
 
-
+    /*add variables to cache the latest x and y values. After the user stops moving and lifts their
+    touch, these are the starting point for the next path (the next segment of the line to draw).*/
+    private var currentX = 0f
+    private var currentY = 0f
 
 
    /* This callback method is called by the Android system with the changed screen dimensions,
@@ -95,7 +98,12 @@ class MyCanvasView(context: Context):View(context) {
 // is at the top left corner of the Canvas.
 
     //Create stubs for the three functions
-    private fun touchStart() {}
+    private fun touchStart() {
+        path.reset()
+        path.moveTo(motionTouchEventX, motionTouchEventY)
+        currentX = motionTouchEventX
+        currentY = motionTouchEventY
+    }
 
     private fun touchMove() {}
 
